@@ -1,0 +1,42 @@
+Title,
+Revision,
+Date,2017-11-18
+Generated,04/27/18 07:22:44
+Company,
+Comment 1,
+Comment 2,
+Comment 3,
+Comment 4,
+Total Parts,24
+Total Unique Parts,21
+
+
+
+Ref,Qty,Value,Footprint,Datasheet,Description,MP,Price,
+C1 ,1,0,1u,Capacitors_SMD:C_0805_HandSoldering,, , , 
+C2 ,1,10u,Capacitors_SMD:C_0805_HandSoldering,, , , 
+C3 ,1,10uF,Capacitors_Tantalum_SMD:CP_Tantalum_Case-B_EIA-3528-21_Hand,, , , 
+C4 C9 ,2,0.1u,Capacitors_SMD:C_0805_HandSoldering,, , , 
+C5 C11 ,2,0,1U,Capacitors_SMD:C_0805_HandSoldering,, , , 
+C6 C7 ,2,22pf,Capacitors_SMD:C_0805_HandSoldering,, , , 
+C8 ,1,0.1,Capacitors_SMD:C_0805_HandSoldering,, , , 
+D1 ,1,WS2812B,Libs:WS2812B,Adafruit Industries,Intelligent Control Led Integrated Light Source Pack Of 10,WS2812B,5.56 USD
+F1 ,1,Polyfuse,Libs:LittleFuse_110F_24V,, , , 
+FTDI1 ,1,FTDI,Pin_Headers:Pin_Header_Angled_1x06_Pitch2.54mm,, , , 
+J1 ,1,Spare,Pin_Headers:Pin_Header_Straight_1x04_Pitch2.54mm,, , , 
+J2 ,1,+12V_con,Connectors_Terminal_Blocks:TerminalBlock_bornier-2_P5.08mm,, , , 
+J3 ,1,LimitUpper,Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm,, , , 
+J4 ,1,ControlSwitch,Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm,, , , 
+J5 ,1,LimitLower,Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm,, , , 
+J6 ,1,Motor_controller_connections,Pin_Headers:Pin_Header_Straight_1x09_Pitch2.54mm,, , , 
+JP1 ,1,Jumper,Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm,, , , 
+R1 ,1,10K,Resistors_SMD:R_0805_HandSoldering,, , , 
+U1 ,1,L7805,TO_SOT_Packages_THT:TO-220-3_Horizontal,, , , 
+U2 ,1,ATMEGA328P-AU-Arduino,Housings_QFP:TQFP-32_7x7mm_Pitch0.8mm,, , , 
+Y1 ,1,8MHZ,Crystals:Crystal_SMD_HC49-SD_HandSoldering,, , , 
+
+
+
+
+BOM made with KICAD_BOM_WIZARD (https://github.com/HashDefineElectronics/KiCad_BOM_Wizard.git)
+Generated 04/27/18 07:22:44
