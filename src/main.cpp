@@ -3,8 +3,6 @@
 
 Om vi inte vet vart den är (första boot up) så går vi sakta upp. efter det så kaliberar vi längd.
 
-soft nödstop (10 % av max)
-
 en knapp för upp och ned (toggle)
 led til fault condition
 
@@ -14,19 +12,19 @@ led til fault condition
 
 #include <Arduino.h>
 #include <AccelStepper.h>
-#include <Adafruit_NeoPixel.h>
-#include <PinButton.h>
+#include <Adafruit_NeoPixel.h> //RGB led
+#include <PinButton.h>         //debounce för knappen
 
 //PINS:
 
-const int fault = 11;
-const int stopHighPin = 7;
-const int stopLowPin = 6;
-const int enable = 8;
-const int toggleSwitch = 2;
-const uint8_t PixelPin = A1; // make sure to set this to the correct pin, ignored for Esp8266
-const int stepPin = 9;
-const int dirPin = 10;
+const int fault = 11;        // active low
+const int stopHighPin = 7;   //Active LOW
+const int stopLowPin = 6;    //active low
+const int enable = 8;        //active LOW till motor drivare
+const int toggleSwitch = 2;  //Active LOW
+const uint8_t PixelPin = A1; //..pixel controller
+const int stepPin = 9;       // till Motor drivare
+const int dirPin = 10;       // till Motor drivare
 
 // Define a stepper and the pins it will use
 AccelStepper stepper(AccelStepper::DRIVER, stepPin, dirPin); // Driver for stepPin, DirPin
@@ -38,6 +36,7 @@ PinButton myButton(toggleSwitch);
 uint32_t red = pixels.Color(255, 0, 0);
 uint32_t green = pixels.Color(0, 255, 0);
 uint32_t yellow = pixels.Color(255, 100, 0);
+uint32_t dark = pixels.Color(0, 0, 0);
 
 //heartBeat Vars:
 int beat = 0;
@@ -51,14 +50,11 @@ boolean toggleOld = false;
 boolean atUpPos = false;
 boolean atDownPos = false;
 boolean inPos = false;
-int distance = 1000;
 unsigned long timeSinceInPos = 0;
-int runonce = 99;
 
 //Motor settings:
-
-int defaultSpeed = 20000; //20000
-int defaultAcc = 3000;    //40000
+int defaultSpeed = 800; //20000
+int defaultAcc = 1000;  //40000
 boolean enableState = false;
 
 //Protos:
@@ -72,13 +68,14 @@ void test();
 void enableDrive();
 void setup()
 {
+
     Serial.begin(9600);
     stepper.setEnablePin(enable);
     stepper.setMaxSpeed(defaultSpeed);
     stepper.setAcceleration(defaultAcc);
-    stepper.setMinPulseWidth(7);
+    stepper.setMinPulseWidth(4);
 
-    pinMode(fault, INPUT);
+    pinMode(fault, INPUT_PULLUP);
     pinMode(enable, OUTPUT);
     pinMode(stopHighPin, INPUT_PULLUP);
     pinMode(stopLowPin, INPUT_PULLUP);
@@ -87,8 +84,10 @@ void setup()
     pixels.begin(); // This initializes the NeoPixel library.
     //pixels.setBrightness(36);
     timeSinceInPos = millis();
+    pixels.setPixelColor(0, yellow); // Moderately bright yellow color.
+    pixels.show();                   // This sends the updated pixel color to the hardware.
     Serial.println("Up and running! Waiting for button push to start cal ");
-    while (digitalRead(toggleSwitch) != LOW)
+    while (digitalRead(toggleSwitch) != LOW) //väntar att man skal trycka på knappen innan vi kaliberar
     {
     }
     startCal();
@@ -98,20 +97,21 @@ void setup()
 void loop()
 {
 
-    myButton.update(); // Get the updated value :
-    if (millis() - timeSinceInPos > 5000)
+    myButton.update();
+    if (millis() - timeSinceInPos > 5000) //timeout, anti button Spam rutin. Kanske borde vara 20-30 sek?
     {
         /*     Serial.print("Inpos: ");
         Serial.println(inPos); */
         inPos = true;
     }
-    else
+    else  
         inPos = false;
+
     if (myButton.isSingleClick() && atUpPos == true && atDownPos == false && inPos == true)
     {
         inPos = false;
         Serial.println("Going Down");
-        runMotor(0, -1000);
+        runMotor(0, -1200);
     }
 
     //     if (digitalRead(toggleSwitch) == LOW && atDownPos == true && atUpPos == false && inPos == true)
@@ -132,24 +132,23 @@ void loop()
  */
     if (myButton.isLongClick())
     {
-        Serial.println("enableToggle");
+        Serial.print("enableToggle! Drive On: ");
+        Serial.println(!enableState);
         enableDrive();
     }
 
-
-
-    if (digitalRead(fault) == HIGH)
+    /* if (digitalRead(fault) == LOW)
     {
         Serial.println("fault");
         faultState();
     }
-
+ */
     if (enableState == false && inPos == true)
         heartBeat();
     else if (enableState == true)
     {
-        pixels.setPixelColor(0, yellow); // Moderately bright green color.
-        pixels.show();                   // This sends the updated pixel color to the hardware.
+        pixels.setPixelColor(0, yellow);
+        pixels.show(); // This sends the updated pixel color to the hardware.
     }
 }
 
@@ -167,24 +166,22 @@ void runMotor(int direction, int position)
 {
     //up = direction 1
     // down = 0
-    timeSinceInPos = millis();
-    //se till att den ska röra sig långt, annars finns det chans att den deaccelererar mitt i körningen
 
-    if (direction == 1)
+    if (direction == 1) //kör upp ur badet
     {
         stepper.moveTo(position);
 
         while (stepper.distanceToGo() != 0)
         {
             if (digitalRead(stopHighPin) == 0)
-            { //sluta coasta när vi träffar sensorn
+            { //träffar vi denna så har vi gått för långt/något har lossnat
                 Serial.println("Hit Upper sensor");
                 faultState();
                 break;
             }
 
             if (digitalRead(stopLowPin) == 0)
-            { //sluta coasta när vi träffar sensorn
+            { //träffar vi denna så har vi gått för långt/något har lossnat
                 Serial.println("Hit Lower sensor");
                 faultState();
                 break;
@@ -205,14 +202,14 @@ void runMotor(int direction, int position)
         {
 
             if (digitalRead(stopHighPin) == 0)
-            { //sluta coasta när vi träffar sensorn
+            { //träffar vi denna så har vi gått för långt/något har lossnat
                 faultState();
 
                 break;
             }
 
             if (digitalRead(stopLowPin) == 0)
-            { //sluta coasta när vi träffar sensorn
+            { //träffar vi denna så har vi gått för långt/något har lossnat
                 faultState();
 
                 break;
@@ -226,8 +223,7 @@ void runMotor(int direction, int position)
     }
     Serial.print("At position: ");
     Serial.println(stepper.currentPosition());
-        timeSinceInPos = millis();
-
+    timeSinceInPos = millis();
 }
 
 void BootupBlink() //bootup last thing before loop()
@@ -251,6 +247,7 @@ void BootupBlink() //bootup last thing before loop()
         pixels.show(); // This sends the updated pixel color to the hardware.
         delay(3);
     }
+    pixels.setPixelColor(0, dark);
 }
 void heartBeat() //Im alive!
 {
@@ -290,28 +287,28 @@ void faultState()
 }
 void startCal()
 {
-
-    stepper.setMaxSpeed(300);
-    stepper.setAcceleration(200);
+    stepper.setMaxSpeed(150);
+    stepper.setAcceleration(500);
     stepper.moveTo(5000);
 
-    while (stepper.distanceToGo() != 0)
+    //stepper.distanceToGo() != 0
+    while (digitalRead(stopHighPin) != 0)
     {
-        if (digitalRead(stopHighPin) == 0)
+        /*    if ( == 0)
         { //sluta coasta när vi träffar sensorn
             Serial.println("Hit Upper sensor");
 
             break;
-        }
+        } */
         stepper.run();
     }
+    delay(200);
     stepper.setCurrentPosition(0);
 
-    stepper.moveTo(-300);
+    stepper.moveTo(-150);
 
     while (stepper.distanceToGo() != 0)
     {
-
         stepper.run();
     }
     atUpPos = true;
@@ -320,8 +317,7 @@ void startCal()
     Serial.println("Calibrated!");
     stepper.setMaxSpeed(defaultSpeed);
     stepper.setAcceleration(defaultAcc);
-            timeSinceInPos = millis();
-
+    timeSinceInPos = millis();
 }
 
 void inputState()
