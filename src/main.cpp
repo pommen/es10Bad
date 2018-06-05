@@ -53,8 +53,8 @@ boolean inPos = false;
 unsigned long timeSinceInPos = 0;
 
 //Motor settings:
-int defaultSpeed = 800; //20000
-int defaultAcc = 1000;  //40000
+int defaultSpeed = 700; //20000
+int defaultAcc = 800;  //40000
 boolean enableState = false;
 
 //Protos:
@@ -66,9 +66,9 @@ void inputState();
 void faultState();
 void test();
 void enableDrive();
+
 void setup()
 {
-
     Serial.begin(9600);
     stepper.setEnablePin(enable);
     stepper.setMaxSpeed(defaultSpeed);
@@ -96,22 +96,21 @@ void setup()
 
 void loop()
 {
-
-    myButton.update();
+     myButton.update();
     if (millis() - timeSinceInPos > 5000) //timeout, anti button Spam rutin. Kanske borde vara 20-30 sek?
     {
         /*     Serial.print("Inpos: ");
         Serial.println(inPos); */
         inPos = true;
     }
-    else  
+    else
         inPos = false;
 
     if (myButton.isSingleClick() && atUpPos == true && atDownPos == false && inPos == true)
     {
         inPos = false;
         Serial.println("Going Down");
-        runMotor(0, -1200);
+        runMotor(0, -1780); //100step = 27mm
     }
 
     //     if (digitalRead(toggleSwitch) == LOW && atDownPos == true && atUpPos == false && inPos == true)
@@ -150,6 +149,17 @@ void loop()
         pixels.setPixelColor(0, yellow);
         pixels.show(); // This sends the updated pixel color to the hardware.
     }
+     if (digitalRead(stopHighPin) == 0)
+            { //träffar vi denna så har vi gått för långt/något har lossnat
+                Serial.println("Hit Upper sensor");
+                faultState();
+            }
+
+            if (digitalRead(stopLowPin) == 0)
+            { //träffar vi denna så har vi gått för långt/något har lossnat
+                Serial.println("Hit Lower sensor");
+                faultState();
+            }
 }
 
 void enableDrive()
