@@ -1,0 +1,12 @@
+(sym_lib_table
+  (lib (name Controller-rescue)(type Legacy)(uri ${KIPRJMOD}/Controller-rescue.lib)(options "")(descr ""))
+  (lib (name switches)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/switches.lib)(options "")(descr ""))
+  (lib (name relays)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/relays.lib)(options "")(descr ""))
+  (lib (name motors)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/motors.lib)(options "")(descr ""))
+  (lib (name transistors)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/transistors.lib)(options "")(descr ""))
+  (lib (name conn)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/conn.lib)(options "")(descr ""))
+  (lib (name 74xx)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/74xx.lib)(options "")(descr ""))
+  (lib (name cmos4000)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/cmos4000.lib)(options "")(descr ""))
+  (lib (name valves)(type Legacy)(uri ${KICAD_SYMBOL_DIR}/valves.lib)(options "")(descr ""))
+  (lib (name WS2812B)(type Legacy)(uri C:/Users/LillaHunden/Documents/kiCAD/Libs/Libs/WS2812B.lib)(options "")(descr ""))
+)
