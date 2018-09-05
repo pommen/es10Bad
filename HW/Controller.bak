@@ -320,7 +320,7 @@ U 1 1 5AE1D352
 P 4450 3650
 F 0 "C3" H 4568 3696 50  0000 L CNN
 F 1 "10uF" H 4568 3605 50  0000 L CNN
-F 2 "Capacitors_Tantalum_SMD:CP_Tantalum_Case-C_EIA-6032-28_Hand" H 4488 3500 50  0001 C CNN
+F 2 "Capacitors_Tantalum_SMD:CP_Tantalum_Case-B_EIA-3528-21_Hand" H 4488 3500 50  0001 C CNN
 F 3 "" H 4450 3650 50  0001 C CNN
 	1    4450 3650
 	1    0    0    -1  
@@ -677,7 +677,7 @@ Text GLabel 7300 5850 2    60   Input ~ 0
 LimitLower
 Text GLabel 7300 5950 2    60   Input ~ 0
 LimitUpper
-Text GLabel 7300 5650 2    60   Input ~ 0
+Text GLabel 7300 5450 2    60   Input ~ 0
 Switch
 Text GLabel 7300 3850 2    60   Input ~ 0
 Dir
